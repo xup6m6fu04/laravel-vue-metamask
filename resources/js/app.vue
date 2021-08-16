@@ -321,7 +321,7 @@ export default {
         },
         getOrders: function () {
             axios
-                .get('/api/orders?from_address=' + this.currentAccount)
+                .get(process.env.MIX_APP_URL + '/api/orders?from_address=' + this.currentAccount)
                 .then(response => {
                     this.orders = response.data.data
                     this.showOrder = true;
@@ -388,7 +388,7 @@ export default {
             })
                 .then((txHash) => {
                     axios
-                        .post('/api/order',
+                        .post(process.env.MIX_APP_URL +  + '/api/order',
                             {
                                 chain_id: this.currentChainIdHex,
                                 from_address: this.currentAccount,
