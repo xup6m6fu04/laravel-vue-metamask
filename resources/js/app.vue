@@ -336,7 +336,7 @@ export default {
         },
         getOrders: function () {
             axios
-                .get(process.env.MIX_APP_URL + '/api/orders?from_address=' + this.currentAccount)
+                .get(process.env.MIX_APP_URL + '/api/orders?from_address=' + this.currentAccount + '&chain_id=' + this.currentChainIdHex)
                 .then(response => {
                     this.orders = response.data.data
                 });

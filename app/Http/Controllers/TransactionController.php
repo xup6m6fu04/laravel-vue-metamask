@@ -26,9 +26,11 @@ class TransactionController extends Controller
     public function get(Request $request): JsonResponse
     {
         $from_address = $request->input('from_address', '');
+        $chain_id = $request->input('chain_id', '');
         $data = '';
         if ($from_address) {
             $orders = Order::where('from_address', $from_address)
+                ->where('chain_id', $chain_id)
                 ->orderBy('created_at', 'desc')
                 ->get();
             $data = $orders;
