@@ -388,7 +388,7 @@ export default {
             })
                 .then((txHash) => {
                     axios
-                        .post(process.env.MIX_APP_URL +  + '/api/order',
+                        .post(process.env.MIX_APP_URL + '/api/order',
                             {
                                 chain_id: this.currentChainIdHex,
                                 from_address: this.currentAccount,
