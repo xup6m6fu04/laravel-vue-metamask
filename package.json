@@ -1,0 +1,35 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "mix",
+        "watch": "mix watch",
+        "watch-poll": "mix watch -- --watch-options-poll=1000",
+        "hot": "mix watch --hot",
+        "prod": "npm run production",
+        "production": "mix --production"
+    },
+    "devDependencies": {
+        "@headlessui/vue": "^1.4.0",
+        "@heroicons/vue": "^1.0.3",
+        "@metamask/detect-provider": "^1.2.0",
+        "@tailwindcss/forms": "^0.3.3",
+        "@vue/compiler-sfc": "^3.2.2",
+        "autoprefixer": "^10.3.1",
+        "axios": "^0.21.1",
+        "browser-sync": "^2.27.5",
+        "browser-sync-webpack-plugin": "^2.3.0",
+        "laravel-mix": "^6.0.6",
+        "lodash": "^4.17.19",
+        "postcss": "^8.3.6",
+        "tailwindcss": "^2.2.7",
+        "vue-loader": "^16.5.0"
+    },
+    "dependencies": {
+        "@metamask/onboarding": "^1.0.1",
+        "@tailwindcss/typography": "^0.4.1",
+        "@vue-hero-icons/outline": "^1.7.2",
+        "ethereum-address": "^0.0.4",
+        "vue-axios": "^3.2.5"
+    }
+}
