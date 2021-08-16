@@ -320,12 +320,8 @@ export default {
             }
         },
         getOrders: function () {
-            let url = process.env.MIX_APP_URL
-            if (url === undefined) {
-                url = ''
-            }
             axios
-                .get(url + '/api/orders?from_address=' + this.currentAccount)
+                .get('/api/orders?from_address=' + this.currentAccount)
                 .then(response => {
                     this.orders = response.data.data
                     this.showOrder = true;
@@ -391,12 +387,8 @@ export default {
                 params: [transactionParameters],
             })
                 .then((txHash) => {
-                    let url = process.env.MIX_APP_URL
-                    if (url === undefined) {
-                        url = ''
-                    }
                     axios
-                        .post(url + '/api/order',
+                        .post('/api/order',
                             {
                                 chain_id: this.currentChainIdHex,
                                 from_address: this.currentAccount,
