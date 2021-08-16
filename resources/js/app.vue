@@ -12,8 +12,8 @@
                 </div>
                 <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                     <div class="flex-shrink-0 flex items-center">
-<!--                        <img class="block lg:hidden h-8 w-auto" src="../image/metamask.svg" alt="Workflow" />-->
-<!--                        <img class="hidden lg:block h-8 w-auto" src="../image/metamask.svg" alt="Workflow" />-->
+                        <!--                        <img class="block lg:hidden h-8 w-auto" src="../image/metamask.svg" alt="Workflow" />-->
+                        <!--                        <img class="hidden lg:block h-8 w-auto" src="../image/metamask.svg" alt="Workflow" />-->
                     </div>
                 </div>
                 <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -91,9 +91,9 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Amount
                             </th>
-<!--                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">-->
-<!--                                Status-->
-<!--                            </th>-->
+                            <!--                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">-->
+                            <!--                                Status-->
+                            <!--                            </th>-->
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Etherscan
                             </th>
@@ -110,24 +110,24 @@
                                         <div class="text-sm font-medium text-gray-900">
                                             {{ this.transferChainIdHex(order.chain_id) }}
                                         </div>
-<!--                                        <div class="text-sm text-gray-500">-->
-<!--                                            {{ this.transferChainIdHex(order.chain_id) }}-->
-<!--                                        </div>-->
+                                        <!--                                        <div class="text-sm text-gray-500">-->
+                                        <!--                                            {{ this.transferChainIdHex(order.chain_id) }}-->
+                                        <!--                                        </div>-->
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">{{ order.to_address }}</div>
-<!--                                <div class="text-sm text-gray-500">{{ order.from_address }}</div>-->
+                                <!--                                <div class="text-sm text-gray-500">{{ order.from_address }}</div>-->
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ order.amount }}
                             </td>
-<!--                            <td class="px-6 py-4 whitespace-nowrap">-->
-<!--                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">-->
-<!--                                        Active-->
-<!--                                    </span>-->
-<!--                            </td>-->
+                            <!--                            <td class="px-6 py-4 whitespace-nowrap">-->
+                            <!--                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">-->
+                            <!--                                        Active-->
+                            <!--                                    </span>-->
+                            <!--                            </td>-->
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <a :href="this.chainIdHexToUrl(order.chain_id) + order.tx_hash" class="text-indigo-600 hover:text-indigo-900">LINK</a>
                             </td>
@@ -145,7 +145,6 @@
                 <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
                     <DialogOverlay class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                 </TransitionChild>
-
                 <!-- This element is to trick the browser into centering the modal contents. -->
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <TransitionChild
@@ -171,7 +170,7 @@
                                         <div class="mt-1 relative rounded-md shadow-sm">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <span class="text-gray-500 sm:text-sm">
-                                                    Ξ
+                                                Ξ
                                                 </span>
                                             </div>
                                             <input type="text" v-model="this.address" name="address" id="address" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="Address" />
@@ -183,7 +182,6 @@
                                             <span class="block sm:inline">address is not valid</span>
                                         </div>
                                     </div>
-
                                     <DialogTitle as="h3" class="pt-6 text-lg leading-6 font-medium text-gray-600 pb-1">
                                         Amount
                                     </DialogTitle>
@@ -191,7 +189,7 @@
                                         <div class="mt-1 relative rounded-md shadow-sm">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <span class="text-gray-500 sm:text-sm">
-                                                    Ξ
+                                                Ξ
                                                 </span>
                                             </div>
                                             <input type="text" name="amount" id="amount" v-model="this.amount" @keypress="isNumber($event)" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" />
@@ -239,20 +237,19 @@
             <div class="mt-8 border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
                 <div class="flex space-x-6 md:order-2">
                     <a href="https://github.com/xup6m6fu04/laravel-vue-metamask" class="flex items-center space-x-2 text-cool-indigo-600 hover:text-cool-indigo-500 transition-colors duration-75 font-semibold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
                         <p>
-
                         </p>
                     </a>
                 </div>
                 <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
-
                 </p>
             </div>
         </div>
     </footer>
 </template>
-
 <script>
 import MetaMaskOnboard from "@metamask/onboarding";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
