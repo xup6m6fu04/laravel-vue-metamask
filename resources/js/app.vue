@@ -327,8 +327,7 @@ export default {
                 provider.on("accountsChanged", this.handleAccountsChanged);
                 provider.on("disconnect", this.handleDisconnect);
             } else {
-                this.setVariableNull();
-                console.log("Please install only MetaMask.");
+                this.installMetaMask()
             }
         },
         getOrders: function () {
