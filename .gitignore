@@ -14,3 +14,8 @@ yarn-error.log
 /.idea
 /.vscode
 /public/js/app.js
+/build/mysql/sql/*
+!/build/mysql/sql/.gitignore
+/build/mysql/data/*
+!/build/mysql/data/.gitignore
+
