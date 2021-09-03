@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,10 +15,32 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+// No need JWT
+Route::group(['prefix' => 'auth'], function () {
+    // 登入
+    Route::post('/login', [AuthController::class, 'login']);
+    // 取得 nonce
+    Route::post('/nonce', [AuthController::class, 'generateNonce']);
 });
 
-Route::post('/order',  [TransactionController::class, 'store']);
-Route::get('/orders',  [TransactionController::class, 'get']);
+// Need JWT
+Route::group(['middleware' => 'auth:api'], function () {
+
+    // Auth
+
+    Route::group(['prefix' => 'auth'], function () {
+        // 登出
+        Route::post('/logout', [AuthController::class, 'logout']);
+        // 刷新憑證
+        Route::post('/refresh', [AuthController::class, 'refresh']);
+        // 獲取通過身份驗證的使用者
+        Route::post('/me', [AuthController::class, 'me']);
+    });
+
+    // Order
+
+    // 建立訂單
+    Route::post('/order', [OrderController::class, 'create']);
+    // 查詢訂單
+    Route::get('/orders', [OrderController::class, 'get']);
+});

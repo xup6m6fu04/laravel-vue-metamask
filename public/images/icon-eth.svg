@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="prefix__eth" width="36" height="36" viewBox="0 0 36 36">
+    <defs>
+        <style>
+            .prefix__cls-2{fill:rgba(255,255,255,.6)}.prefix__cls-3{fill:#fff}
+        </style>
+    </defs>
+    <circle id="prefix__Ellipse_212" cx="18" cy="18" r="18" data-name="Ellipse 212" style="fill:#627eea"/>
+    <g id="prefix__Group_586" data-name="Group 586" transform="translate(10.047 4.465)">
+        <path id="prefix__Path_2601" d="M16.5 4v9.9l8.369 3.74z" class="prefix__cls-2" data-name="Path 2601" transform="translate(-8.127 -4)"/>
+        <path id="prefix__Path_2602" d="M17.371 4L9 17.642l8.371-3.74z" class="prefix__cls-3" data-name="Path 2602" transform="translate(-9 -4)"/>
+        <path id="prefix__Path_2603" d="M16.5 22.474V29.2l8.375-11.587z" class="prefix__cls-2" data-name="Path 2603" transform="translate(-8.127 -2.415)"/>
+        <path id="prefix__Path_2604" d="M17.371 29.2v-6.73L9 17.616z" class="prefix__cls-3" data-name="Path 2604" transform="translate(-9 -2.415)"/>
+        <path id="prefix__Path_2605" d="M16.5 21.469l8.369-4.86-8.369-3.737z" data-name="Path 2605" transform="translate(-8.127 -2.968)" style="fill:rgba(255,255,255,.2)"/>
+        <path id="prefix__Path_2606" d="M9 16.61l8.371 4.86v-8.6z" class="prefix__cls-2" data-name="Path 2606" transform="translate(-9 -2.968)"/>
+    </g>
+</svg>

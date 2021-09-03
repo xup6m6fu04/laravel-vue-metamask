@@ -30,6 +30,10 @@
         "@tailwindcss/typography": "^0.4.1",
         "@vue-hero-icons/outline": "^1.7.2",
         "ethereum-address": "^0.0.4",
-        "vue-axios": "^3.2.5"
+        "vue": "^3.2.4",
+        "vue-axios": "^3.2.5",
+        "vue-loading-overlay": "^4.0.3",
+        "vue3-cookies": "^1.0.1",
+        "vue3-loading-overlay": "^0.0.0"
     }
 }
