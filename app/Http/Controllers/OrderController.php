@@ -90,7 +90,7 @@ class OrderController extends Controller
             }
 
             // 取出未付款的訂單
-            $order = Order::where('order_id', $order_id)
+            $order = Order::where('order_id', (int)$order_id)
                 ->where('user_id', $user->id)
                 ->where('description', $user->address)  // 之後可能會拿掉，畢竟只是註解
                 ->where('status', Order::ORDER_PENDING)
