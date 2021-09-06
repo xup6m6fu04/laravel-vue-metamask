@@ -100,6 +100,7 @@ class OrderController extends Controller
             Log::debug($user->id);
             Log::debug($user->address);
             Log::debug(Order::ORDER_PENDING);
+            Log::debug($order->toSql());
             // 查看訂單是否存在
             if (!$order) {
                 throw new Exception('order not exists');
