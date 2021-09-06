@@ -192,6 +192,7 @@ class OrderController extends Controller
             $args = $request->all();
             // 暫時紀錄
             Log::debug('callback for payment', $args);
+            Log::debug('sign', $args['Sign']);
             // 先驗證簽名
             if (!$this->verifySign($args)) {
                 throw new Exception('Sign error');
