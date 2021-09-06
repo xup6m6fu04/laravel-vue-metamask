@@ -53,6 +53,7 @@ class Order extends Model
 
     protected $casts = [
         'order_id' => 'string',
+        'bitwin_order_id' => 'string',
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
         'expired_at' => 'datetime:Y-m-d H:i:s',

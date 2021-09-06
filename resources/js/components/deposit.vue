@@ -131,12 +131,12 @@
 													class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
 													placeholder="0.00"
 											/>
-<!--											<div class="absolute inset-y-0 right-0 flex items-center">-->
-<!--												<label for="currency" class="sr-only">Currency</label>-->
-<!--												<select id="currency" name="currency" class="focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">-->
-<!--													<option>ETH</option>-->
-<!--												</select>-->
-<!--											</div>-->
+											<!--											<div class="absolute inset-y-0 right-0 flex items-center">-->
+											<!--												<label for="currency" class="sr-only">Currency</label>-->
+											<!--												<select id="currency" name="currency" class="focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">-->
+											<!--													<option>ETH</option>-->
+											<!--												</select>-->
+											<!--											</div>-->
 										</div>
 									</div>
 									<div class="pt-3 pb-3" v-show="amountError === true">
@@ -301,7 +301,7 @@ export default {
 	methods: {
 		handleDeposit: function() {
 			this.amountError = false
-			let reg = new RegExp(/^-?\d+(\.\d+)?$/);
+			let reg = new RegExp(/^-?\d+(\.\d+)?$/)
 			if (!reg.test(this.amount) || this.amount <= 0) {
 				this.amountError = true
 				return false
@@ -310,10 +310,12 @@ export default {
 			this.deposit()
 		},
 		deposit: async function() {
+			
 			this.isLoading = true
 			this.amountError = false
 			this.depositModal = false
-			const apiOrder = await createOrder ({
+			
+			const apiOrder = await createOrder({
 				symbol: this.symbolSelected.name,
 				chain: this.networkSelected.chain,
 				amount: this.amount,
@@ -321,48 +323,55 @@ export default {
 				address: this.currentAddress,
 			}, this.$cookies.get('access_token'))
 			
-			if (apiOrder.status === 200) {
-				this.order = apiOrder.order
+			if (apiOrder.status !== 200) {
+				this.isLoading = false
+				return false
 			}
 			
-			if (this.currentAddress !== null && this.$cookies.isKey('access_token')) {
-				
-				const apiPayOrder = await payOrder({
+			this.order = apiOrder.order
+			
+			const apiPayOrder = await payOrder({
+				order_id: this.order.order_id,
+				sign: this.currentSign,
+				address: this.currentAddress,
+			}, this.$cookies.get('access_token'))
+			
+			if (apiPayOrder.status !== 200) {
+				this.isLoading = false
+				return false
+			}
+			
+			this.bitwin = apiPayOrder.bitwin
+			
+			const transactionParameters = {
+				to: this.bitwin['CryptoWallet'], // Required except during contract publications.
+				from: this.currentAddress, // must match user's active address.
+				value: '0x' + ((this.bitwin['RealAmount'] / 100000000) * 1000000000000000000).toString(16), // Only required to send ether to the recipient from the initiating external account.
+				chainId: this.currentChain, // Used to prevent transaction reuse across blockchains. Auto-filled by MetaMask.
+			}
+			
+			const provider = await detectEthereumProvider()
+			
+			await provider.request({
+				method: 'eth_sendTransaction',
+				params: [transactionParameters],
+			}).then(async (txHash) => {
+				const apiPaidOrder = await paidOrder({
 					order_id: this.order.order_id,
-					sign: this.currentSign,
-					address: this.currentAddress,
+					tx_hash: txHash
 				}, this.$cookies.get('access_token'))
 				
-				if (apiPayOrder.status === 200) {
-					this.bitwin = apiPayOrder.bitwin
-				}
-				
-				const transactionParameters = {
-					to: this.bitwin['CryptoWallet'], // Required except during contract publications.
-					from: this.currentAddress, // must match user's active address.
-					value: '0x' + ((this.bitwin['RealAmount']/100000000) * 1000000000000000000).toString(16), // Only required to send ether to the recipient from the initiating external account.
-					chainId: this.currentChain, // Used to prevent transaction reuse across blockchains. Auto-filled by MetaMask.
-				}
-				
-				const provider = await detectEthereumProvider()
-				
-				await provider.request({
-					method: 'eth_sendTransaction',
-					params: [transactionParameters],
-				}).then(async (txHash) => {
-					const apiPaidOrder = await paidOrder({
-						order_id: this.order.order_id,
-						tx_hash: txHash
-					}, this.$cookies.get('access_token'))
-					
-					if (apiPaidOrder.status === 200) {
-						window.location.reload()
-					}
-				}).catch((error) => {
+				if (apiPaidOrder.status !== 200) {
 					this.isLoading = false
-					console.log(error)
-				})
-			}
+					return false
+				}
+				window.location.reload()
+				
+			}).catch((error) => {
+				this.isLoading = false
+				console.log(error)
+			})
+			
 		},
 		closeDeposit: function() {
 			this.amountError = false
