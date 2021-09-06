@@ -221,9 +221,6 @@ class OrderController extends Controller
         unset($args['Sign']);
         ksort($args);
         $args = array_filter($args);
-        Log::debug(config('app.bitwin.sign_key'));
-        Log::debug($sign);
-        Log::debug(strtoupper(md5(implode(',', $args) . ',' . config('app.bitwin.sign_key'))));
-        return $sign === strtoupper(md5(implode(',', $args) . ',' . config('app.bitwin.sign_key')));
+        return $sign === strtoupper(md5(implode(',', $args) . ',' . config('bitwin.sign_key')));
     }
 }
