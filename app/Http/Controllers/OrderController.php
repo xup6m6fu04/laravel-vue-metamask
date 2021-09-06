@@ -64,6 +64,7 @@ class OrderController extends Controller
                 'order' => $order
             ]);
         } catch (Exception $e) {
+            Log::error($e);
             return response()->json([
                 'message' => $e->getMessage()
             ], 400);
@@ -127,6 +128,7 @@ class OrderController extends Controller
             ]);
 
         } catch (Exception $e) {
+            Log::error($e);
             return response()->json([
                 'message' => $e->getMessage()
             ], 400);
@@ -177,6 +179,7 @@ class OrderController extends Controller
             ]);
 
         } catch (Exception $e) {
+            Log::error($e);
             return response()->json([
                 'message' => $e->getMessage()
             ], 400);
@@ -206,6 +209,7 @@ class OrderController extends Controller
 
             return 'SUCCESS';
         } catch (Exception $e) {
+            Log::error($e);
             return 'ERROR: ' . $e->getMessage();
         }
 
