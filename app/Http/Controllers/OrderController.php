@@ -95,6 +95,11 @@ class OrderController extends Controller
                 ->where('description', $user->address)  // 之後可能會拿掉，畢竟只是註解
                 ->where('status', Order::ORDER_PENDING)
                 ->first();
+
+            Log::debug($order_id);
+            Log::debug($user->id);
+            Log::debug($user->address);
+            Log::debug(Order::ORDER_PENDING);
             // 查看訂單是否存在
             if (!$order) {
                 throw new Exception('order not exists');
