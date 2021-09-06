@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\BitwinOrder;
 use App\Models\Order;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Xup6m6fu04\Bitwin\Exception\BitwinSDKException;
 use function Symfony\Component\String\b;
 
@@ -49,6 +51,7 @@ class OrderService
         $order->symbol = $this->bitwinService->getSymbol($symbol, $chain);
         $order->description = $user->address; // 無聊放一下地址在備註
         $order->status = Order::ORDER_PENDING;
+        $order->expired_at = Carbon::now()->addHour();
         if (!$order->save()) {
             throw new Exception('order save failed');
         }

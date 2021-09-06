@@ -11,6 +11,9 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class OrderController extends Controller
 {
@@ -67,6 +70,9 @@ class OrderController extends Controller
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function pay(Request $request): JsonResponse
     {
         try {
@@ -81,31 +87,50 @@ class OrderController extends Controller
             if (!$this->authService->verifySignature($user->nonce, $sign, $address)) {
                 throw new Exception('address verification failed');
             }
+
             // 取出未付款的訂單
             $order = Order::where('order_id', $order_id)
                 ->where('user_id', $user->id)
                 ->where('description', $user->address)  // 之後可能會拿掉，畢竟只是註解
                 ->where('status', Order::ORDER_PENDING)
                 ->first();
+            // 查看訂單是否存在
             if (!$order) {
                 throw new Exception('order not exists');
             }
+            // 查看訂單是否過期
+            if (Carbon::parse($order->expired_at) <= Carbon::now()) {
+                throw new Exception('order is expired');
+            }
+
             // 建立 BITWIN 付款單
-            $result = $this->bitwinService->createCryptoPayOrder([
-                'MerchantUserId' => $user->id,
+            $timestamp = Carbon::now()->timestamp;
+            $bitwin = $this->bitwinService->createCryptoPayOrder([
+                'MerchantUserId' => (string)$user->id,
                 'MerchantOrderId' => $order->order_id,
                 'OrderDescription' => $order->description,
-                'Amount' => $order->amount,
+                'Amount' => (string)($order->amount * 100000000),
                 'Symbol' => $order->symbol,
-                'CallBackUrl' => '',
-                'TimeStamp' => Carbon::now()->timestamp
+                'CallBackUrl' => config('app.url') . '/api/callback/payment',
+                'TimeStamp' => (string)$timestamp
             ]);
 
+            // 回填 bitwin_order_id
+            $order->bitwin_order_id = $bitwin['OrderId'];
+            if (!$order->save()) {
+                throw new Exception('order save failed');
+            }
+
+            return response()->json([
+                'message' => 'SUCCESS',
+                'bitwin' => $bitwin
+            ]);
 
         } catch (Exception $e) {
-
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
         }
-
 
     }
 
@@ -113,6 +138,7 @@ class OrderController extends Controller
     {
         $user = auth()->user();
         $orders = Order::where('user_id', $user->id)
+            ->where('status', '!=', Order::ORDER_PENDING)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -120,5 +146,77 @@ class OrderController extends Controller
             'message' => 'SUCCESS',
             'orders' => $orders
         ]);
+    }
+
+    public function paid(Request $request): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            $order_id = $request->input('order_id');
+            $tx_hash = $request->input('tx_hash');
+
+            $order = Order::where('order_id', $order_id)
+                ->where('user_id', $user->id)
+                ->where('status', Order::ORDER_PENDING)
+                ->first();
+
+            // 查看訂單是否存在
+            if (!$order) {
+                throw new Exception('order not exists');
+            }
+
+            $order->tx_hash = $tx_hash;
+            $order->status = Order::ORDER_PAID;
+            if (!$order->save()) {
+                throw new Exception('order save failed');
+            }
+
+            return response()->json([
+                'message' => 'SUCCESS',
+                'order' => $order
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function payment(Request $request): string
+    {
+        try {
+            $args = $request->all();
+            // 暫時紀錄
+            Log::debug('callback for payment', $args);
+            // 先驗證簽名
+            if (!$this->verifySign($args)) {
+                throw new Exception('Sign error');
+            }
+            $order = Order::where('order_id', $args['MerchantOrderId'])
+                ->where('bitwin_order_id', $args['OrderId'])
+                ->first();
+            if (!$order) {
+                throw new Exception('order not found');
+            }
+            $order->status = Order::ORDER_COMPLETED;
+            if(!$order->save()) {
+                throw new Exception('order save failed');
+            }
+
+            return 'SUCCESS';
+        } catch (Exception $e) {
+            return 'ERROR: ' . $e->getMessage();
+        }
+
+    }
+
+    public function verifySign($args): bool
+    {
+        $sign = $args['Sign'];
+        unset($args['Sign']);
+        ksort($args);
+        $args = array_filter($args);
+        return $sign === strtoupper(md5(implode(',', $args) . ',' . config('app.bitwin.sign_key')));
     }
 }

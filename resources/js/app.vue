@@ -84,31 +84,6 @@ export default {
 		setVariableNull: function() {
 			this.currentAddress = null
 			this.$cookies.remove('access_token')
-		},
-		chainIdHexToUrl: function(chainIdHex) {
-			let chain = chainIdHex
-			switch (chainIdHex) {
-				case '0x1':
-					chain = 'https://etherscan.io/tx/'
-					break
-				case '0x3':
-					chain = 'https://ropsten.etherscan.io/tx/'
-					break
-				case '0x4':
-					chain = 'https://rinkeby.etherscan.io/tx/'
-					break
-				case '0x5':
-					chain = 'https://goerli.etherscan.io/tx/'
-					break
-				case '0x2a':
-					chain = 'https://kovan.etherscan.io/tx/'
-					break
-			}
-			return chain
-		},
-		installMetaMask: function() {
-			const onboard = new MetaMaskOnboard()
-			onboard.startOnboarding()
 		}
 	},
 }

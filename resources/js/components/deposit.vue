@@ -182,6 +182,8 @@ import ethereum_address from 'ethereum-address'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, SelectorIcon } from '@heroicons/vue/solid'
 import createOrder from '../api/order/create'
+import payOrder from '../api/order/pay'
+import paidOrder from '../api/order/paid'
 
 const symbols = [
 	{
@@ -259,6 +261,7 @@ export default {
 		const symbolSelected = ref(symbols[0])
 		const networkSelected = ref(btcNetworks[0])
 		const networks = ref(btcNetworks)
+		const order = ref([])
 		
 		return {
 			open,
@@ -273,7 +276,8 @@ export default {
 			symbols,
 			symbolSelected,
 			networkSelected,
-			networks
+			networks,
+			order
 		}
 	},
 	watch: {
@@ -304,63 +308,61 @@ export default {
 			}
 			// 建單
 			this.deposit()
-			
-			
-			// const transactionParameters = {
-			// 	to: this.address, // Required except during contract publications.
-			// 	from: this.currentAddress, // must match user's active address.
-			// 	value: '0x' + (this.amount * 1000000000000000000).toString(16), // Only required to send ether to the recipient from the initiating external account.
-			// 	chainId: this.currentChain, // Used to prevent transaction reuse across blockchains. Auto-filled by MetaMask.
-			// }
-			// this.deposit(transactionParameters)
 		},
 		deposit: async function() {
 			this.isLoading = true
 			this.amountError = false
 			this.depositModal = false
-			// const provider = await detectEthereumProvider()
 			const apiOrder = await createOrder ({
 				symbol: this.symbolSelected.name,
 				chain: this.networkSelected.chain,
 				amount: this.amount,
 				sign: this.currentSign,
 				address: this.currentAddress,
-			}, this.$cookies.get('access_token')).then(() => {
-				this.isLoading = false
-				window.location.reload()
-			})
-			// console.log(apiOrder)
-			// await provider.request({
-			// 	method: 'eth_sendTransaction',
-			// 	params: [transactionParameters],
-			// })
-			// 		.then((txHash) => {
-			// 			axios
-			// 					.post(process.env.MIX_APP_URL + '/api/transaction/order',
-			// 							{
-			// 								chain_id: this.currentChain,
-			// 								from_address: this.currentAddress,
-			// 								to_address: this.address,
-			// 								tx_hash: txHash,
-			// 								amount: this.amount,
-			// 							}, {
-			// 								headers: {
-			// 									Authorization: 'Bearer ' + this.$cookies.get('access_token') //the token is a variable which holds the token
-			// 								}
-			// 							})
-			// 					.then(() => {
-			// 						this.getOrders()
-			// 						this.isLoading = false
-			// 					})
-			// 					.catch((error) => {
-			// 						this.isLoading = false
-			// 						console.log(error)
-			// 					})
-			// 		})
-			// 		.catch((error) => {
-			// 			this.isLoading = false
-			// 			console.log(error)
-			// 		})
+			}, this.$cookies.get('access_token'))
+			
+			if (apiOrder.status === 200) {
+				this.order = apiOrder.order
+			}
+			
+			if (this.currentAddress !== null && this.$cookies.isKey('access_token')) {
+				
+				const apiPayOrder = await payOrder({
+					order_id: this.order.order_id,
+					sign: this.currentSign,
+					address: this.currentAddress,
+				}, this.$cookies.get('access_token'))
+				
+				if (apiPayOrder.status === 200) {
+					this.bitwin = apiPayOrder.bitwin
+				}
+				
+				const transactionParameters = {
+					to: this.bitwin['CryptoWallet'], // Required except during contract publications.
+					from: this.currentAddress, // must match user's active address.
+					value: '0x' + ((this.bitwin['RealAmount']/100000000) * 1000000000000000000).toString(16), // Only required to send ether to the recipient from the initiating external account.
+					chainId: this.currentChain, // Used to prevent transaction reuse across blockchains. Auto-filled by MetaMask.
+				}
+				
+				const provider = await detectEthereumProvider()
+				
+				await provider.request({
+					method: 'eth_sendTransaction',
+					params: [transactionParameters],
+				}).then(async (txHash) => {
+					const apiPaidOrder = await paidOrder({
+						order_id: this.order.order_id,
+						tx_hash: txHash
+					}, this.$cookies.get('access_token'))
+					
+					if (apiPaidOrder.status === 200) {
+						window.location.reload()
+					}
+				}).catch((error) => {
+					this.isLoading = false
+					console.log(error)
+				})
+			}
 		},
 		closeDeposit: function() {
 			this.amountError = false

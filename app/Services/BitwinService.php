@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\BitwinOrder;
 use Exception;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Log;
 use Xup6m6fu04\Bitwin;
 use Xup6m6fu04\Bitwin\Exception\BitwinSDKException;
 use Xup6m6fu04\Bitwin\HTTPClient\GuzzleHTTPClient;
@@ -28,7 +30,9 @@ class BitwinService
      */
     public function __construct()
     {
-        $this->httpClient = new GuzzleHTTPClient();
+        $this->httpClient = new GuzzleHTTPClient([
+            'verify' => false
+        ]);
         $this->bitwin = new Bitwin($this->httpClient, [
             'merchant_id' => config('bitwin.merchant_id'),
             'sign_key' => config('bitwin.sign_key'),
@@ -114,7 +118,7 @@ class BitwinService
     /**
      * @throws BitwinSDKException
      */
-    public function createCryptoPayOrder(array $args)
+    public function createCryptoPayOrder(array $args): array
     {
         $result = $this->bitwin->api('CreateCryptoPayOrder')->call($args);
         if (!$result->isSucceeded()) {

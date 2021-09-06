@@ -32,6 +32,12 @@
 							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 								建立時間
 							</th>
+							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								過期時間
+							</th>
+							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Etherscan
+							</th>
 						</tr>
 						</thead>
 						<tbody class="bg-white divide-y divide-gray-200">
@@ -54,26 +60,32 @@
 								{{ order.amount }}
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-								<span v-if="order.status === 0">未完成</span>
-								<span v-else-if="order.status === 1">已完成</span>
+<!--								<span v-if="order.status === 0">未完成</span>-->
+								<span v-if="order.status === 1">已完成</span>
+								<span v-else-if="order.status === 2">等待中</span>
 								<span v-else>狀態異常</span>
 <!--								<a :href="this.chainIdHexToUrl(order.chain_id) + order.tx_hash" class="text-indigo-600 hover:text-indigo-900">LINK</a>-->
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-								<div v-if="order.status === 0">
-									<button
-											@click="this.openDepositModal"
-											type="button"
-											class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-									>
-										<span class="pt-0.5">支付</span>
-									</button>
-								</div>
-								<div v-else-if="order.status === 1">已支付</div>
+<!--								<div v-if="order.status === 0">-->
+<!--									<button @click="this.orderPay(order.order_id)" type="button" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">-->
+<!--										<span class="pt-0.5">支付</span>-->
+<!--									</button>-->
+<!--								</div>-->
+								<div v-if="order.status === 1">已支付(已入帳)</div>
+								<div v-else-if="order.status === 2">已支付(等待入帳)</div>
 								<div v-else>狀態異常</div>
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
 								{{ order.created_at }}
+							</td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+								{{ order.expired_at }}
+							</td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium w-40 cursor-pointer">
+								<div @click="redirectEtherscan(order.tx_hash)">
+									<img src="https://etherscan.io/images/logo-ether.png?v=0.0.2">
+								</div>
 							</td>
 						</tr>
 						</tbody>
@@ -88,20 +100,27 @@
 import { PaperClipIcon } from '@heroicons/vue/solid'
 import { inject, ref } from 'vue'
 import getOrders from '../api/order/get'
+import payOrder from '../api/order/pay'
+import paidOrder from '../api/order/paid'
+import detectEthereumProvider from '@metamask/detect-provider'
 
 export default {
 	setup() {
 		const orders = ref([])
+		const bitwin = ref([])
 		const depositModal = inject('depositModal')
 		const currentChain = inject('currentChain')
 		const currentAddress = inject('currentAddress')
 		const isLoading = inject('isLoading')
+		const currentSign = inject('currentSign')
 		return {
 			orders,
 			depositModal,
 			currentChain,
 			currentAddress,
-			isLoading
+			isLoading,
+			bitwin,
+			currentSign
 		}
 	},
 	watch: {
@@ -123,6 +142,9 @@ export default {
 				console.log(this.orders)
 			}
 		},
+		redirectEtherscan: function(tx_hash) {
+			window.open('https://ropsten.etherscan.io/tx/' + tx_hash, '_blank');
+		}
 	}
 }
 </script>

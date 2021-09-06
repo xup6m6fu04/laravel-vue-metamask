@@ -18,4 +18,5 @@ yarn-error.log
 !/build/mysql/sql/.gitignore
 /build/mysql/data/*
 !/build/mysql/data/.gitignore
+composer.lock
 

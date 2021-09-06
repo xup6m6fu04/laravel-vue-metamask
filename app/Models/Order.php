@@ -40,6 +40,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereSymbol($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUserId($value)
+ * @property string $expired_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereExpiredAt($value)
  */
 class Order extends Model
 {
@@ -47,8 +49,12 @@ class Order extends Model
 
     const ORDER_PENDING = 0;
     const ORDER_COMPLETED = 1;
+    const ORDER_PAID = 2;
 
     protected $casts = [
+        'order_id' => 'string',
         'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+        'expired_at' => 'datetime:Y-m-d H:i:s',
     ];
 }
