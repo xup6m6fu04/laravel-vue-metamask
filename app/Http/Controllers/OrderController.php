@@ -93,7 +93,7 @@ class OrderController extends Controller
             $order = Order::where('order_id', $order_id)
                 ->where('description', $user->address)  // 之後可能會拿掉，畢竟只是註解
                 ->where('status', Order::ORDER_PENDING)
-                ->where('user_id', (string)$user->id)
+                ->where('user_id', $user->id)
                 ->first();
             // 查看訂單是否存在
             if (!$order) {
