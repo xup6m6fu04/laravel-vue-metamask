@@ -106,6 +106,15 @@ class OrderController extends Controller
 
             // 建立 BITWIN 付款單
             $timestamp = Carbon::now()->timestamp;
+            Log::debug('debug',[
+                'MerchantUserId' => (string)$user->id,
+                'MerchantOrderId' => $order->order_id,
+                'OrderDescription' => $order->description,
+                'Amount' => (string)($order->amount * 100000000),
+                'Symbol' => $order->symbol,
+                'CallBackUrl' => config('app.url') . '/api/callback/payment',
+                'TimeStamp' => (string)$timestamp
+            ]);
             $bitwin = $this->bitwinService->createCryptoPayOrder([
                 'MerchantUserId' => (string)$user->id,
                 'MerchantOrderId' => $order->order_id,
