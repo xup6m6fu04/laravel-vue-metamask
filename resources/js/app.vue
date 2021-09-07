@@ -22,7 +22,6 @@ import axios from 'axios'
 import me from './api/auth/me'
 
 export default {
-	
 	setup() {
 		const depositModal = inject('depositModal')
 		const currentChain = inject('currentChain')
