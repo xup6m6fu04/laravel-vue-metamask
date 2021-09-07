@@ -90,14 +90,14 @@ class OrderController extends Controller
             }
 
             // 取出未付款的訂單
-            $order = Order::where('order_id', (int)$order_id)
+            $order = Order::where('order_id', $order_id)
                 ->where('user_id', $user->id)
                 ->where('description', $user->address)  // 之後可能會拿掉，畢竟只是註解
                 ->where('status', Order::ORDER_PENDING)
                 ->first();
             // 查看訂單是否存在
             if (!$order) {
-                throw new Exception('order not exists');
+                throw new Exception('order not found');
             }
             // 查看訂單是否過期
             if (Carbon::parse($order->expired_at) <= Carbon::now()) {
@@ -106,15 +106,6 @@ class OrderController extends Controller
 
             // 建立 BITWIN 付款單
             $timestamp = Carbon::now()->timestamp;
-            Log::debug('debug',[
-                'MerchantUserId' => (string)$user->id,
-                'MerchantOrderId' => $order->order_id,
-                'OrderDescription' => $order->description,
-                'Amount' => (string)($order->amount * 100000000),
-                'Symbol' => $order->symbol,
-                'CallBackUrl' => config('app.url') . '/api/callback/payment',
-                'TimeStamp' => (string)$timestamp
-            ]);
             $bitwin = $this->bitwinService->createCryptoPayOrder([
                 'MerchantUserId' => (string)$user->id,
                 'MerchantOrderId' => $order->order_id,
@@ -173,7 +164,7 @@ class OrderController extends Controller
 
             // 查看訂單是否存在
             if (!$order) {
-                throw new Exception('order not exists');
+                throw new Exception('order not found');
             }
 
             $order->tx_hash = $tx_hash;
