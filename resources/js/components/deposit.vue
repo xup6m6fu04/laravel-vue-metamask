@@ -40,7 +40,7 @@
 											
 											<transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
 												<ListboxOptions class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-													<ListboxOption as="template" v-for="symbol in symbols" :key="symbol.id" :value="symbol" v-slot="{ active, symbolSelected }">
+													<ListboxOption as="template" v-for="symbol in symbols" :key="symbol.id" :value="symbol" :disabled="symbol.disabled" v-slot="{ active, symbolSelected }">
 														<li :class="[active ? 'text-white bg-indigo-600' : 'text-gray-900', 'cursor-default select-none relative py-2 pl-3 pr-9']">
 															<div class="flex items-center">
 																<img :src="symbol.avatar" alt="" class="flex-shrink-0 h-6 w-6 rounded-full"/>
@@ -188,19 +188,22 @@ import paidOrder from '../api/order/paid'
 const symbols = [
 	{
 		id: 1,
-		name: 'BTC',
-		avatar: '/images/icon-btc.svg',
+		name: 'ETH',
+		avatar: '/images/icon-eth.svg',
+		disabled: false
 	},
 	{
 		id: 2,
-		name: 'ETH',
-		avatar: '/images/icon-eth.svg',
+		name: 'USDT',
+		avatar: '/images/icon-usdt.svg',
+		disabled: true
 	},
 	{
 		id: 3,
-		name: 'USDT',
-		avatar: '/images/icon-usdt.svg',
-	}
+		name: 'BTC',
+		avatar: '/images/icon-btc.svg',
+		disabled: true
+	},
 ]
 
 const btcNetworks = [
@@ -258,8 +261,8 @@ export default {
 		const currentSign = inject('currentSign')
 		const isLoading = inject('isLoading')
 		const symbolSelected = ref(symbols[0])
-		const networkSelected = ref(btcNetworks[0])
-		const networks = ref(btcNetworks)
+		const networkSelected = ref(ethNetworks[0])
+		const networks = ref(ethNetworks)
 		const order = ref([])
 		
 		return {
