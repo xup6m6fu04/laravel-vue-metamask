@@ -6,6 +6,7 @@
 	<!--Modal-->
 	<Deposit/>
 	<Loading/>
+	<Alert/>
 </template>
 <script>
 import { inject, ref } from 'vue'

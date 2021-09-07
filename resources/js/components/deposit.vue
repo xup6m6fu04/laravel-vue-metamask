@@ -1,7 +1,7 @@
 <template>
 	<!--Modal-->
 	<TransitionRoot as="template" :show="depositModal">
-		<Dialog as="div" auto-reopen="true" class="fixed z-10 inset-0 overflow-y-auto" @close="open = false">
+		<Dialog as="div" auto-reopen="true" class="fixed z-10 inset-0 overflow-y-auto" @close="depositModal = false">
 			<div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
 				<TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
 					<DialogOverlay class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
@@ -249,7 +249,6 @@ export default {
 		SelectorIcon,
 	},
 	setup() {
-		const open = ref(true)
 		const address = ref('')
 		const amount = ref(0)
 		const amountError = ref(false)
@@ -264,7 +263,6 @@ export default {
 		const order = ref([])
 		
 		return {
-			open,
 			address,
 			amount,
 			amountError,

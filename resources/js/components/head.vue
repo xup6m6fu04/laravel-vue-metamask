@@ -20,18 +20,18 @@
 					<div>
 						<div v-if="!this.validAddress()">
 							<button
-								@click="this.handleConnect"
-								type="button"
-								class="inline-flex justify-center px-4 py-2 text-sm font-medium text-black bg-gray-200 border border-transparent rounded-md hover:bg-gray-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+									@click="this.handleConnect"
+									type="button"
+									class="inline-flex justify-center px-4 py-2 text-sm font-medium text-black bg-gray-200 border border-transparent rounded-md hover:bg-gray-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
 							>
 								<span class="pt-0.5">登入</span>
 							</button>
 						</div>
 						<div v-else>
 							<button
-								@click="this.openDepositModal"
-								type="button"
-								class="inline-flex justify-center px-4 py-2 text-sm font-medium text-black bg-gray-200 border border-transparent rounded-md hover:bg-gray-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+									@click="this.openDepositModal"
+									type="button"
+									class="inline-flex justify-center px-4 py-2 text-sm font-medium text-black bg-gray-200 border border-transparent rounded-md hover:bg-gray-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
 							>
 								<span class="pt-0.5">儲值</span>
 							</button>
@@ -44,11 +44,12 @@
 </template>
 
 <script>
+import MetaMaskOnboard from '@metamask/onboarding'
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/vue/outline'
 import ethereum_address from 'ethereum-address'
 import detectEthereumProvider from '@metamask/detect-provider'
-import me from "../api/auth/me";
+import me from '../api/auth/me'
 import nonce from '../api/auth/nonce'
 import login from '../api/auth/login'
 import { inject, ref } from 'vue'
@@ -72,12 +73,18 @@ export default {
 		const currentAddress = inject('currentAddress')
 		const isLoading = inject('isLoading')
 		const currentSign = inject('currentSign')
-		
+		const alertModal = inject('alertModal')
+		const alertWord = inject('alertWord')
+		const currentChain = inject('currentChain')
+
 		return {
 			depositModal,
 			currentAddress,
 			isLoading,
-			currentSign
+			currentSign,
+			alertModal,
+			alertWord,
+			currentChain
 		}
 	},
 	methods: {
@@ -86,48 +93,48 @@ export default {
 			const provider = await detectEthereumProvider()
 			if (provider && provider.isMetaMask) {
 				provider
-					.request({ method: 'eth_requestAccounts' })
-					.then(async (accounts) => {
-						const provider = await detectEthereumProvider()
-						const apiNonce = await nonce(accounts[0])
-						const msg = `0x${ Buffer.from(apiNonce.nonce, 'utf8').toString('hex') }`
-						await provider.request({
-							method: 'personal_sign',
-							params: [msg, accounts[0], ''],
-						})
-							.then(async (sign) => {
-								const apiLogin = await login(sign, accounts[0])
-								// console.log(apiLogin)
-								if (apiLogin.status === 200 && apiLogin.message === 'SUCCESS') {
-									this.$cookies.set('access_token', apiLogin.access_token, '3h')
-									this.currentSign = apiLogin.sign
-									const apiMe = await me(accounts[0], this.$cookies.get('access_token'))
-									if (apiMe.status === 200 && apiMe.message === 'SUCCESS') {
-										this.currentAddress = apiMe.resp.address
-									}
-								}
-								this.isLoading = false
+						.request({ method: 'eth_requestAccounts' })
+						.then(async (accounts) => {
+							const provider = await detectEthereumProvider()
+							const apiNonce = await nonce(accounts[0])
+							const msg = `0x${ Buffer.from(apiNonce.nonce, 'utf8').toString('hex') }`
+							await provider.request({
+								method: 'personal_sign',
+								params: [msg, accounts[0], ''],
 							})
-							.catch((err) => {
-								this.isLoading = false
+									.then(async (sign) => {
+										const apiLogin = await login(sign, accounts[0])
+										// console.log(apiLogin)
+										if (apiLogin.status === 200 && apiLogin.message === 'SUCCESS') {
+											this.$cookies.set('access_token', apiLogin.access_token, '3h')
+											this.currentSign = apiLogin.sign
+											const apiMe = await me(accounts[0], this.$cookies.get('access_token'))
+											if (apiMe.status === 200 && apiMe.message === 'SUCCESS') {
+												this.currentAddress = apiMe.resp.address
+											}
+										}
+										this.isLoading = false
+									})
+									.catch((err) => {
+										this.isLoading = false
+										this.currentAddress = null
+										this.$cookies.remove('access_token')
+										console.error(err)
+									})
+						})
+						.catch((err) => {
+							this.isLoading = false
+							console.error(err)
+							if (err.code === 4001) {
+								// EIP-1193 userRejectedRequest error
+								// If this happens, the user rejected the connection request.
 								this.currentAddress = null
 								this.$cookies.remove('access_token')
-								console.error(err)
-							})
-					})
-					.catch((err) => {
-						this.isLoading = false
-						console.error(err)
-						if (err.code === 4001) {
-							// EIP-1193 userRejectedRequest error
-							// If this happens, the user rejected the connection request.
-							this.currentAddress = null
-							this.$cookies.remove('access_token')
-						} else {
-							this.currentAddress = null
-							this.$cookies.remove('access_token')
-						}
-					})
+							} else {
+								this.currentAddress = null
+								this.$cookies.remove('access_token')
+							}
+						})
 			} else {
 				this.installMetaMask()
 			}
@@ -136,7 +143,16 @@ export default {
 			return ethereum_address.isAddress(this.currentAddress)
 		},
 		openDepositModal: function() {
-			this.depositModal = true
+			if (this.currentChain === '0x3') {
+				this.depositModal = true
+			} else {
+				this.alertModal = true
+				this.alertWord = "目前本站僅支援 0x3 (Ropsten Test Network)"
+			}
+		},
+		installMetaMask: function () {
+			const onboard = new MetaMaskOnboard();
+			onboard.startOnboarding();
 		}
 	}
 }

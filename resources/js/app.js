@@ -8,6 +8,7 @@ import Deposit from './components/deposit.vue'
 import Account from './components/account.vue'
 import Loading from './components/loading.vue'
 import Order from './components/order.vue'
+import Alert from './components/alert.vue'
 import VueCookies from 'vue3-cookies'
 
 const app = createApp({
@@ -17,6 +18,8 @@ const app = createApp({
     currentSign: ref(''),
     isLoading: ref(false),
     depositModal: ref(false),
+    alertModal: ref(false),
+    alertWord: ref('ERROR'),
   },
 })
 app.use(VueCookies)
@@ -27,4 +30,5 @@ app.component('Deposit', Deposit)
 app.component('Account', Account)
 app.component('Loading', Loading)
 app.component('Order', Order)
+app.component('Alert', Alert)
 app.mount('#app')
