@@ -46,7 +46,7 @@ class PlayerController extends Controller
             DB::beginTransaction();
             $user = auth()->user();
             // 這邊先限定一個帳號只能有一組遊戲帳號 (現在也只有單幣別
-            if (Player::where('user_id', $user->id)->count()) {
+            if (Player::where('user_id', $user->id)->count() > 0) {
                 throw new Exception('目前一個地址僅限申請一組遊戲帳號');
             }
             // 雪花演算法建立玩家帳號
