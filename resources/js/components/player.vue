@@ -119,7 +119,9 @@ export default {
 			if (this.validAddress(this.currentAddress) && this.$cookies.isKey('access_token')) {
 				const apiPlayer = await getPlayers(this.$cookies.get('access_token'))
 				if (apiPlayer.status === 200) {
-					await this.fetchBalance(apiPlayer.players[0].account)
+					if (apiPlayer.players.length > 0) {
+						await this.fetchBalance(apiPlayer.players[0].account)
+					}
 					this.players = apiPlayer.players
 					this.isLoading = false
 				} else {
