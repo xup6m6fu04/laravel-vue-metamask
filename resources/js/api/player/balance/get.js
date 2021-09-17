@@ -1,17 +1,13 @@
 import axios from 'axios'
 
-export default async function(args, cookie) {
+export default async function(account, cookie) {
   let status = 0
   let message = ''
-  let bitwin = ''
+  let balance = ''
 
   await axios
-    .post(process.env.MIX_APP_URL + '/api/order/pay',
+    .get(process.env.MIX_APP_URL + '/api/player/balance?account=' + account,
       {
-        order_id: args.order_id,
-        sign: args.sign,
-        address: args.address,
-      }, {
         headers: {
           Authorization: 'Bearer ' + cookie //the token is a variable which holds the token
         }
@@ -20,7 +16,7 @@ export default async function(args, cookie) {
       status = response.status
       message = response.data.message
       if (status === 200) {
-        bitwin = response.data.bitwin
+        balance = response.data.balance
       }
     })
     .catch(function(error) { // 请求失败处理
@@ -31,6 +27,6 @@ export default async function(args, cookie) {
   return {
     status,
     message,
-    bitwin,
+    balance,
   }
 }

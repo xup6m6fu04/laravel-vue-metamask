@@ -93,7 +93,7 @@ class OrderController extends Controller
             $order = Order::where('order_id', $order_id)
                 ->where('user_id', $user->id)
                 ->where('description', $user->address)  // 之後可能會拿掉，畢竟只是註解
-                ->where('status', Order::ORDER_PENDING)
+                ->where('status', Order::ORDER_STATUS_PENDING)
                 ->first();
             // 查看訂單是否存在
             if (!$order) {
@@ -140,7 +140,7 @@ class OrderController extends Controller
     {
         $user = auth()->user();
         $orders = Order::where('user_id', $user->id)
-            ->where('status', '!=', Order::ORDER_PENDING)
+            ->where('status', '!=', Order::ORDER_STATUS_PENDING)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -159,7 +159,7 @@ class OrderController extends Controller
 
             $order = Order::where('order_id', $order_id)
                 ->where('user_id', $user->id)
-                ->where('status', Order::ORDER_PENDING)
+                ->where('status', Order::ORDER_STATUS_PENDING)
                 ->first();
 
             // 查看訂單是否存在
@@ -168,7 +168,7 @@ class OrderController extends Controller
             }
 
             $order->tx_hash = $tx_hash;
-            $order->status = Order::ORDER_PAID;
+            $order->status = Order::ORDER_STATUS_PAID;
             if (!$order->save()) {
                 throw new Exception('order save failed');
             }
@@ -202,7 +202,8 @@ class OrderController extends Controller
             if (!$order) {
                 throw new Exception('order not found');
             }
-            $order->status = Order::ORDER_COMPLETED;
+            $order->real_amount = bcdiv($args['PayAmount'], '100000000', 10);
+            $order->status = Order::ORDER_STATUS_COMPLETED;
             if(!$order->save()) {
                 throw new Exception('order save failed');
             }

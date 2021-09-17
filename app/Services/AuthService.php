@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use Elliptic\EC;
@@ -53,5 +54,19 @@ class AuthService
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ];
+    }
+
+    public function generateAccount($num, $b = 62): string
+    {
+        $base = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $r = $num % $b;
+        $res = $base[$r];
+        $q = floor($num / $b);
+        while ($q) {
+            $r = $q % $b;
+            $q = floor($q / $b);
+            $res = $base[$r] . $res;
+        }
+        return $res;
     }
 }

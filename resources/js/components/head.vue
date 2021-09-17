@@ -76,7 +76,9 @@ export default {
 		const alertModal = inject('alertModal')
 		const alertWord = inject('alertWord')
 		const currentChain = inject('currentChain')
-
+		const ethAmount = inject('ethAmount')
+		const usdtAmount = inject('usdtAmount')
+		
 		return {
 			depositModal,
 			currentAddress,
@@ -84,7 +86,9 @@ export default {
 			currentSign,
 			alertModal,
 			alertWord,
-			currentChain
+			currentChain,
+			ethAmount,
+			usdtAmount
 		}
 	},
 	methods: {
@@ -111,6 +115,8 @@ export default {
 											const apiMe = await me(accounts[0], this.$cookies.get('access_token'))
 											if (apiMe.status === 200 && apiMe.message === 'SUCCESS') {
 												this.currentAddress = apiMe.resp.address
+												this.ethAmount = apiMe.resp.eth_amount
+												this.usdtAmount = apiMe.resp.usdt_amount
 											}
 										}
 										this.isLoading = false

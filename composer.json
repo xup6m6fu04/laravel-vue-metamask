@@ -14,7 +14,9 @@
         "laravel/tinker": "^2.5",
         "simplito/elliptic-php": "^1.0",
         "tymon/jwt-auth": "^1.0",
-        "xup6m6fu04/bitwin-sdk-php": "^3.1"
+        "xup6m6fu04/bitwin-sdk-php": "^3.1",
+      "ext-json": "*",
+      "ext-bcmath": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",

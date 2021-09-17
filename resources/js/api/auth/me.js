@@ -20,7 +20,8 @@ export default async function(accounts, cookie) {
       }
     })
     .catch((error) => {
-      console.log(error)
+      status = error.response.status
+      message = error.response.data.message
     })
 
   return {

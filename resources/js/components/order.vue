@@ -7,8 +7,8 @@
 	<div class="flex flex-col">
 		<div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 			<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-				<div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-					<table class="min-w-full divide-y divide-gray-200" v-if="orders.length > 0">
+				<div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg" v-if="orders.length > 0">
+					<table class="min-w-full divide-y divide-gray-200">
 						<thead class="bg-gray-50">
 						<tr>
 							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -25,9 +25,6 @@
 							</th>
 							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 								訂單狀態
-							</th>
-							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								支付結果
 							</th>
 							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 								建立時間
@@ -61,20 +58,11 @@
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
 <!--								<span v-if="order.status === 0">未完成</span>-->
-								<span v-if="order.status === 1">已完成</span>
-								<span v-else-if="order.status === 2">等待中</span>
+								<span v-if="order.status === 1">等待撥款</span>
+								<span v-else-if="order.status === 2">等待入帳</span>
+								<span v-else-if="order.status === 3">已完成</span>
 								<span v-else>狀態異常</span>
 <!--								<a :href="this.chainIdHexToUrl(order.chain_id) + order.tx_hash" class="text-indigo-600 hover:text-indigo-900">LINK</a>-->
-							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-<!--								<div v-if="order.status === 0">-->
-<!--									<button @click="this.orderPay(order.order_id)" type="button" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">-->
-<!--										<span class="pt-0.5">支付</span>-->
-<!--									</button>-->
-<!--								</div>-->
-								<div v-if="order.status === 1">已支付(已入帳)</div>
-								<div v-else-if="order.status === 2">已支付(等待入帳)</div>
-								<div v-else>狀態異常</div>
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
 								{{ order.created_at }}
@@ -103,6 +91,7 @@ import getOrders from '../api/order/get'
 import payOrder from '../api/order/pay'
 import paidOrder from '../api/order/paid'
 import detectEthereumProvider from '@metamask/detect-provider'
+import ethereum_address from 'ethereum-address'
 
 export default {
 	setup() {
@@ -133,18 +122,26 @@ export default {
 	},
 	methods: {
 		fetchOrders: async function() {
-			console.log('fetchOrders')
-			if (this.currentAddress !== null && this.$cookies.isKey('access_token')) {
+			this.isLoading = true
+			this.orders = []
+			if (this.validAddress(this.currentAddress) && this.$cookies.isKey('access_token')) {
 				const apiOrder = await getOrders(this.$cookies.get('access_token'))
 				if (apiOrder.status === 200) {
 					this.orders = apiOrder.orders
+					this.isLoading = true
+				} else {
+					this.isLoading = false
 				}
-				console.log(this.orders)
+			} else {
+				this.isLoading = false
 			}
 		},
 		redirectEtherscan: function(tx_hash) {
 			window.open('https://ropsten.etherscan.io/tx/' + tx_hash, '_blank');
-		}
+		},
+		validAddress: function() {
+			return ethereum_address.isAddress(this.currentAddress)
+		},
 	}
 }
 </script>

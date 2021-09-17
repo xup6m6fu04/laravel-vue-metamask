@@ -177,13 +177,13 @@ import { inject, ref } from 'vue'
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import detectEthereumProvider from '@metamask/detect-provider'
-import axios from 'axios'
 import ethereum_address from 'ethereum-address'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, SelectorIcon } from '@heroicons/vue/solid'
 import createOrder from '../api/order/create'
 import payOrder from '../api/order/pay'
 import paidOrder from '../api/order/paid'
+import getContract from '../api/contract/usdt'
 import '@metamask/legacy-web3'
 
 const symbols = [
@@ -191,25 +191,19 @@ const symbols = [
 		id: 1,
 		name: 'ETH',
 		avatar: '/images/icon-eth.svg',
-		disabled: false,
-		abi: '',
-		contract: ''
+		disabled: false
 	},
 	{
 		id: 2,
 		name: 'USDT',
 		avatar: '/images/icon-usdt.svg',
-		disabled: false,
-		abi: [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"},{"name":"_extraData","type":"bytes"}],"name":"approveAndCall","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"tokenName","type":"string"},{"name":"tokenSymbol","type":"string"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"}],
-		contract: '0x8ac847a7c8b81d1f4d85763e4834b8cd01116d06'
+		disabled: false
 	},
 	{
 		id: 3,
 		name: 'BTC',
 		avatar: '/images/icon-btc.svg',
-		disabled: true,
-		abi: '',
-		contract: ''
+		disabled: true
 	},
 ]
 
@@ -275,6 +269,8 @@ export default {
 		const networkSelected = ref(ethNetworks[0])
 		const networks = ref(ethNetworks)
 		const order = ref([])
+		const alertModal = inject('alertModal')
+		const alertWord = inject('alertWord')
 		
 		return {
 			address,
@@ -289,7 +285,9 @@ export default {
 			symbolSelected,
 			networkSelected,
 			networks,
-			order
+			order,
+			alertModal,
+			alertWord,
 		}
 	},
 	watch: {
@@ -337,6 +335,8 @@ export default {
 			
 			if (apiOrder.status !== 200) {
 				this.isLoading = false
+				this.alertModal = true
+				this.alertWord = apiOrder.message
 				return false
 			}
 			
@@ -350,6 +350,8 @@ export default {
 			
 			if (apiPayOrder.status !== 200) {
 				this.isLoading = false
+				this.alertModal = true
+				this.alertWord = apiPayOrder.message
 				return false
 			}
 			
@@ -367,19 +369,17 @@ export default {
 					break
 				case 'USDT_ERC20':
 					const { web3 } = window
-					const contract = web3.eth.contract(this.symbols[1].abi)
-					const contractInstance = contract.at(this.symbols[1].contract)
+					const contract = web3.eth.contract(getContract().abi)
+					const contractInstance = contract.at(getContract().address)
 					transactionParameters = {
-						to: this.symbols[1].contract, // Required except during contract publications.
+						to: getContract().address, // Required except during contract publications.
 						from: this.currentAddress, // must match user's active address.
 						chainId: this.currentChain, // Used to prevent transaction reuse across blockchains. Auto-filled by MetaMask.
 						data: contractInstance.transfer.getData(this.bitwin['CryptoWallet'], web3.toHex(this.bitwin['RealAmount'] / 100), {from: this.currentAddress}),
 					}
-					console.log(transactionParameters)
-						console.log(web3.toHex(this.bitwin['RealAmount'] / 100))
 					break
 				default:
-					console.log('no support' + this.bitwin['Symbol'])
+					console.log('No Support: ' + this.bitwin['Symbol'])
 			}
 			
 			const provider = await detectEthereumProvider()
@@ -395,6 +395,8 @@ export default {
 				
 				if (apiPaidOrder.status !== 200) {
 					this.isLoading = false
+					this.alertModal = true
+					this.alertWord = apiPaidOrder.message
 					return false
 				}
 				window.location.reload()

@@ -31,6 +31,10 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRand($value)
+ * @property string $eth_amount
+ * @property string $usdt_amount
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereEthAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereUsdtAmount($value)
  */
 class User extends Authenticatable implements JWTSubject
 {

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Player;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\GameService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -80,7 +84,9 @@ class AuthController extends Controller
         return auth()->check() ? response()->json([
             'message' => 'SUCCESS',
             'address' => auth()->user()->address,
-            'sign' => auth()->user()->sign
+            'sign' => auth()->user()->sign,
+            'eth_amount' => auth()->user()->eth_amount,
+            'usdt_amount' => auth()->user()->usdt_amount,
         ]) : response()->json([
             'message' => 'FAILURE'
         ]);

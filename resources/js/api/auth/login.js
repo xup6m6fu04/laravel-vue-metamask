@@ -19,7 +19,8 @@ export default async function(sign, address) {
       }
     })
     .catch(function(error) { // 请求失败处理
-      console.log(error)
+      status = error.response.status
+      message = error.response.data.message
     })
 
   return {

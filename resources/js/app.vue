@@ -1,6 +1,7 @@
 <template>
 	<Head/>
 	<Account/>
+	<Player/>
 	<Order/>
 	<Foot/>
 	<!--Modal-->
@@ -9,16 +10,8 @@
 	<Alert/>
 </template>
 <script>
-import { inject, ref } from 'vue'
-import MetaMaskOnboard from '@metamask/onboarding'
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/vue/outline'
-import { PaperClipIcon } from '@heroicons/vue/solid'
+import { inject } from 'vue'
 import detectEthereumProvider from '@metamask/detect-provider'
-import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { ExclamationIcon } from '@heroicons/vue/outline'
-import ethereum_address from 'ethereum-address'
-import axios from 'axios'
 import me from './api/auth/me'
 
 export default {
@@ -28,12 +21,16 @@ export default {
 		const currentAddress = inject('currentAddress')
 		const isLoading = inject('isLoading')
 		const currentSign = inject('currentSign')
+		const ethAmount = inject('ethAmount')
+		const usdtAmount = inject('usdtAmount')
 		return {
 			depositModal,
 			currentChain,
 			currentAddress,
 			isLoading,
-			currentSign
+			currentSign,
+			ethAmount,
+			usdtAmount
 		}
 	},
 	created() {
@@ -55,6 +52,8 @@ export default {
 							if (apiMe.status === 200) {
 								this.currentAddress = apiMe.resp.address
 								this.currentSign = apiMe.resp.sign
+								this.ethAmount = apiMe.resp.eth_amount
+								this.usdtAmount = apiMe.resp.usdt_amount
 							}
 							this.isLoading = false
 						})
@@ -83,6 +82,8 @@ export default {
 		},
 		setVariableNull: function() {
 			this.currentAddress = null
+			this.ethAmount = ''
+			this.usdtAmount = ''
 			this.$cookies.remove('access_token')
 		}
 	},

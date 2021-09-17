@@ -42,14 +42,17 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUserId($value)
  * @property string $expired_at
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereExpiredAt($value)
+ * @property string $real_amount
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereRealAmount($value)
  */
 class Order extends Model
 {
     use HasFactory;
 
-    const ORDER_PENDING = 0;
-    const ORDER_COMPLETED = 1;
-    const ORDER_PAID = 2;
+    const ORDER_STATUS_PENDING = 0;
+    const ORDER_STATUS_COMPLETED = 1;
+    const ORDER_STATUS_PAID = 2;
+    const ORDER_STATUS_APPRPORTED = 3;
 
     protected $casts = [
         'order_id' => 'string',

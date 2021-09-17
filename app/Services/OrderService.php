@@ -50,7 +50,7 @@ class OrderService
         $order->amount = $amount;
         $order->symbol = $this->bitwinService->getSymbol($symbol, $chain);
         $order->description = $user->address; // 無聊放一下地址在備註
-        $order->status = Order::ORDER_PENDING;
+        $order->status = Order::ORDER_STATUS_PENDING;
         $order->expired_at = Carbon::now()->addHour();
         if (!$order->save()) {
             throw new Exception('order save failed');

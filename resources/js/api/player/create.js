@@ -1,23 +1,25 @@
 import axios from 'axios'
 
-export default async function(address) {
+export default async function(cookie) {
   let status = 0
   let message = ''
-  let nonce = ''
+  let player = ''
 
   await axios
-    .post(process.env.MIX_APP_URL + '/api/auth/nonce',
-      {
-        address: address
+    .post(process.env.MIX_APP_URL + '/api/player',
+      {}, {
+        headers: {
+          Authorization: 'Bearer ' + cookie //the token is a variable which holds the token
+        }
       })
     .then(response => {
       status = response.status
       message = response.data.message
       if (status === 200) {
-        nonce = response.data.nonce
+        player = response.data.player
       }
     })
-    .catch((error) => {
+    .catch(function(error) { // 请求失败处理
       status = error.response.status
       message = error.response.data.message
     })
@@ -25,6 +27,6 @@ export default async function(address) {
   return {
     status,
     message,
-    nonce
+    player,
   }
 }
