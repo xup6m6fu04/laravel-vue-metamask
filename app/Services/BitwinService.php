@@ -130,4 +130,9 @@ class BitwinService
         }
         return $data;
     }
+
+    public function verifySign($args)
+    {
+        return $this->verifySign($args);
+    }
 }

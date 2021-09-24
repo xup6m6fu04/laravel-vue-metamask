@@ -193,7 +193,7 @@ class OrderController extends Controller
             // 暫時紀錄
             Log::debug('callback for payment', $args);
             // 先驗證簽名
-            if (!$this->verifySign($args)) {
+            if (!$this->bitwinService->verifySign($args)) {
                 throw new Exception('Sign error');
             }
             $order = Order::where('order_id', $args['MerchantOrderId'])
@@ -214,14 +214,5 @@ class OrderController extends Controller
             return 'ERROR: ' . $e->getMessage();
         }
 
-    }
-
-    public function verifySign($args): bool
-    {
-        $sign = $args['Sign'];
-        unset($args['Sign']);
-        ksort($args);
-        $args = array_filter($args);
-        return $sign === strtoupper(md5(implode(',', $args) . ',' . config('bitwin.sign_key')));
     }
 }
