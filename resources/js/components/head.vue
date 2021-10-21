@@ -1,4 +1,5 @@
 <template>
+	<span style="display: none" id="hearts-lock"></span>
 	<span style="display: none" id="hearts-signStatus"></span>
 	<span style="display: none" id="hearts-signData"></span>
 	<span style="display: none" id="hearts-signNonce"></span>
@@ -138,9 +139,15 @@ export default {
 		},
 		handleHeartsConnect: async function() {
 			this.isLoading = true
-			this.setIntervalId = await window.setInterval(this.heartConnect, 1000);
+			document.getElementById("hearts-lock").innerHTML = ''
+			document.getElementById("hearts-signStatus").innerHTML = ''
+			document.getElementById("hearts-signData").innerHTML = ''
+			document.getElementById("hearts-signNonce").innerHTML = ''
+			document.getElementById("hearts-signAddress").innerHTML = ''
+			this.setIntervalId = await window.setInterval(this.heartConnect, 500);
 		},
 		heartConnect: async function() {
+			const signLock = document.getElementById("hearts-lock").innerHTML
 			const signStatus = document.getElementById("hearts-signStatus").innerHTML
 			const signData = document.getElementById("hearts-signData").innerHTML
 			const signNonce = document.getElementById("hearts-signNonce").innerHTML
@@ -162,7 +169,7 @@ export default {
 						this.isLoading = false
 					}
 				}
-			} else if (signStatus === 'Lock') {
+			} else if (signLock === 'Lock') {
 				this.isLoading = false
 				clearInterval(this.setIntervalId)
 				this.alertModal = true
