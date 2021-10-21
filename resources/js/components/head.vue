@@ -130,10 +130,10 @@ export default {
 					const apiNonce = await nonce(event.data.address)
 					window.postMessage({ type: "getNonceResp", nonce: apiNonce.nonce }, "*");
 					break
-				case 'showAlert':
-					this.alertModal = true
-					this.alertWord = event.data.message
-					break
+				// case 'showAlert':
+				// 	this.alertModal = true
+				// 	this.alertWord = event.data.message
+				// 	break
 			}
 		},
 		handleHeartsConnect: async function() {
@@ -162,6 +162,11 @@ export default {
 						this.isLoading = false
 					}
 				}
+			} else if (signStatus === 'Lock') {
+				this.isLoading = false
+				clearInterval(this.setIntervalId)
+				this.alertModal = true
+				this.alertWord = 'Please unlock or login your hearts wallet'
 			}
 		},
 		handleConnect: async function() {
