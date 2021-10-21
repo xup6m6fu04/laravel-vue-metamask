@@ -10,10 +10,10 @@
 			<dl>
 				<div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
 					<dt class="text-sm font-medium text-gray-500">
-						鏈網路
+						登入方式
 					</dt>
 					<dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-						{{ this.getChainName(currentChain) }}
+						{{ loginType }}
 					</dd>
 				</div>
 				<div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -52,39 +52,18 @@ import { inject } from 'vue'
 export default {
 	setup() {
 		const currentAddress = inject('currentAddress')
-		const currentChain = inject('currentChain')
+		// const currentChain = inject('currentChain')
 		const ethAmount = inject('ethAmount')
 		const usdtAmount = inject('usdtAmount')
+		const loginType = inject('loginType')
 		
 		return {
 			currentAddress,
-			currentChain,
+			// currentChain,
 			ethAmount,
-			usdtAmount
+			usdtAmount,
+			loginType
 		}
-	},
-	methods: {
-		getChainName: function(chainIdHex) {
-			let chain = chainIdHex
-			switch (chainIdHex) {
-				case '0x1':
-					chain = chainIdHex + ' (Ethereum Main Network)'
-					break
-				case '0x3':
-					chain = chainIdHex + ' (Ropsten Test Network)'
-					break
-				case '0x4':
-					chain = chainIdHex + ' (Rinkeby Test Network)'
-					break
-				case '0x5':
-					chain = chainIdHex + ' (Goerli Test Network)'
-					break
-				case '0x2a':
-					chain = chainIdHex + ' (Kovan Test Network)'
-					break
-			}
-			return chain
-		},
 	}
 }
 </script>

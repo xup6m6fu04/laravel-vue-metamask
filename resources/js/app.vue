@@ -23,6 +23,7 @@ export default {
 		const currentSign = inject('currentSign')
 		const ethAmount = inject('ethAmount')
 		const usdtAmount = inject('usdtAmount')
+		const loginType = inject('loginType')
 		return {
 			depositModal,
 			currentChain,
@@ -30,7 +31,8 @@ export default {
 			isLoading,
 			currentSign,
 			ethAmount,
-			usdtAmount
+			usdtAmount,
+			loginType
 		}
 	},
 	created() {
@@ -39,30 +41,55 @@ export default {
 	methods: {
 		detect: async function() {
 			this.isLoading = true
-			const provider = await detectEthereumProvider()
-			if (provider && provider.isMetaMask) {
-				// provider === window.ethereum (true)
-				this.currentChain = await provider.request({ method: 'eth_chainId' })
-				provider.on('chainChanged', this.handleChainChanged)
-				provider
-						.request({ method: 'eth_accounts' })
-						.then(async (accounts) => {
-							console.log(accounts)
-							const apiMe = await me(accounts[0], this.$cookies.get('access_token'))
-							if (apiMe.status === 200) {
-								this.currentAddress = apiMe.resp.address
-								this.currentSign = apiMe.resp.sign
-								this.ethAmount = apiMe.resp.eth_amount
-								this.usdtAmount = apiMe.resp.usdt_amount
+			if (this.$cookies.get('access_token') !== "") {
+				// 有登入過
+				switch (this.$cookies.get('login_type')) {
+					case 'hearts':
+						const account = this.$cookies.get('address')
+						const apiMe = await me(account, this.$cookies.get('access_token'))
+						if (apiMe.status === 200) {
+							this.currentAddress = apiMe.resp.address
+							this.currentSign = apiMe.resp.sign
+							this.ethAmount = apiMe.resp.eth_amount
+							this.usdtAmount = apiMe.resp.usdt_amount
+							this.loginType = this.$cookies.get('login_type')
+							this.isLoading = false
+						}
+						break;
+					case 'metamask':
+						if (window.ethereum && window.ethereum.isMetaMask) {
+							// metamask is installed
+							const provider = await detectEthereumProvider()
+							if (provider && provider.isMetaMask) {
+								// provider === window.ethereum (true)
+								this.currentChain = await provider.request({ method: 'eth_chainId' })
+								provider.on('chainChanged', this.handleChainChanged)
+								provider
+										.request({ method: 'eth_accounts' })
+										.then(async (accounts) => {
+											const apiMe = await me(accounts[0], this.$cookies.get('access_token'))
+											if (apiMe.status === 200) {
+												this.currentAddress = apiMe.resp.address
+												this.currentSign = apiMe.resp.sign
+												this.ethAmount = apiMe.resp.eth_amount
+												this.usdtAmount = apiMe.resp.usdt_amount
+												this.loginType = this.$cookies.get('login_type')
+											}
+											this.isLoading = false
+										})
+										.catch((err) => {
+											console.error(err)
+											this.isLoading = false
+										})
+								provider.on('accountsChanged', this.handleAccountsChanged)
+								provider.on('disconnect', this.handleDisconnect)
+								this.isLoading = false
 							}
-							this.isLoading = false
-						})
-						.catch((err) => {
-							console.error(err)
-							this.isLoading = false
-						})
-				provider.on('accountsChanged', this.handleAccountsChanged)
-				provider.on('disconnect', this.handleDisconnect)
+						}
+						break;
+					default:
+						this.isLoading = false
+				}
 			}
 		},
 		handleChainChanged: function(_chainId) {

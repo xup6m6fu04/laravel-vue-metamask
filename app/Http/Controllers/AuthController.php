@@ -38,7 +38,7 @@ class AuthController extends Controller
         if ($address) {
             $nonce = strval(rand(100000000, 2147483647));
             $user = User::firstOrNew(
-                ['address' => $address]
+                ['address' => strtolower($address)]
             );
             $user->rand = $nonce;
             $user->save();

@@ -22,7 +22,8 @@ const app = createApp({
     alertModal: ref(false),
     alertWord: ref('ERROR'),
     ethAmount: ref(''),
-    usdtAmount: ref('')
+    usdtAmount: ref(''),
+    loginType: ref('')
   },
 })
 app.use(VueCookies)
