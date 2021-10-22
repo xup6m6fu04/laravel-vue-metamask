@@ -4,6 +4,7 @@
 	<span style="display: none" id="hearts-signData"></span>
 	<span style="display: none" id="hearts-signNonce"></span>
 	<span style="display: none" id="hearts-signAddress"></span>
+	<span style="display: none" id="ExtensionCheckInstalled"></span>
 	<Disclosure as="nav" class="bg-gray-600" v-slot="{ open }">
 		<div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 			<div class="relative flex items-center justify-between h-16">
@@ -152,28 +153,36 @@ export default {
 			const signData = document.getElementById("hearts-signData").innerHTML
 			const signNonce = document.getElementById("hearts-signNonce").innerHTML
 			const signAddress = document.getElementById("hearts-signAddress").innerHTML
-			if (signStatus === 'Confirm' && signData !== '' && signNonce !== '' && signAddress !== '') {
-				clearInterval(this.setIntervalId)
-				const apiLogin = await login(signData, signAddress)
-				if (apiLogin.status === 200 && apiLogin.message === 'SUCCESS') {
-					this.$cookies.set('access_token', apiLogin.access_token, '3h')
-					this.$cookies.set('address', signAddress.toLowerCase(), '3h')
-					this.$cookies.set('login_type', 'hearts', '3h')
-					this.currentSign = apiLogin.sign
-					const apiMe = await me(signAddress, this.$cookies.get('access_token'))
-					if (apiMe.status === 200 && apiMe.message === 'SUCCESS') {
-						this.currentAddress = apiMe.resp.address
-						this.ethAmount = apiMe.resp.eth_amount
-						this.usdtAmount = apiMe.resp.usdt_amount
-						this.loginType = this.$cookies.get('login_type')
-						this.isLoading = false
+			const checkInstalled = document.getElementById("ExtensionCheckInstalled").innerHTML
+			if (checkInstalled === 'Installed') {
+				if (signStatus === 'Confirm' && signData !== '' && signNonce !== '' && signAddress !== '') {
+					clearInterval(this.setIntervalId)
+					const apiLogin = await login(signData, signAddress)
+					if (apiLogin.status === 200 && apiLogin.message === 'SUCCESS') {
+						this.$cookies.set('access_token', apiLogin.access_token, '3h')
+						this.$cookies.set('address', signAddress.toLowerCase(), '3h')
+						this.$cookies.set('login_type', 'hearts', '3h')
+						this.currentSign = apiLogin.sign
+						const apiMe = await me(signAddress, this.$cookies.get('access_token'))
+						if (apiMe.status === 200 && apiMe.message === 'SUCCESS') {
+							this.currentAddress = apiMe.resp.address
+							this.ethAmount = apiMe.resp.eth_amount
+							this.usdtAmount = apiMe.resp.usdt_amount
+							this.loginType = this.$cookies.get('login_type')
+							this.isLoading = false
+						}
 					}
+				} else if (signLock === 'Lock') {
+					this.isLoading = false
+					clearInterval(this.setIntervalId)
+					this.alertModal = true
+					this.alertWord = 'Please unlock or login your hearts wallet'
 				}
-			} else if (signLock === 'Lock') {
+			} else {
 				this.isLoading = false
 				clearInterval(this.setIntervalId)
 				this.alertModal = true
-				this.alertWord = 'Please unlock or login your hearts wallet'
+				this.alertWord = 'Please install hearts wallet'
 			}
 		},
 		handleConnect: async function() {
