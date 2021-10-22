@@ -172,6 +172,9 @@ export default {
 							this.isLoading = false
 						}
 					}
+				} else if (signStatus === 'Cancel') {
+					this.isLoading = false
+					clearInterval(this.setIntervalId)
 				} else if (signLock === 'Lock') {
 					this.isLoading = false
 					clearInterval(this.setIntervalId)
