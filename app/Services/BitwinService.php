@@ -36,6 +36,7 @@ class BitwinService
         $this->bitwin = new Bitwin($this->httpClient, [
             'merchant_id' => config('bitwin.merchant_id'),
             'sign_key' => config('bitwin.sign_key'),
+            'access_key' => config('bitwin.access_key'),
             'is_prod_environment' => config('bitwin.environment') === 'prod', // true is production environment
         ]);
     }

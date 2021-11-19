@@ -5777,16 +5777,16 @@
         },
         {
             "name": "xup6m6fu04/bitwin-sdk-php",
-            "version": "v3.1.2",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/xup6m6fu04/bitwin-sdk-php.git",
-                "reference": "b42e0c8d7cc780ffa68c9e41b8e4df3e1700fdae"
+                "reference": "e1862ffb78b337337ad803fb5e50197f8eb44cf4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/xup6m6fu04/bitwin-sdk-php/zipball/b42e0c8d7cc780ffa68c9e41b8e4df3e1700fdae",
-                "reference": "b42e0c8d7cc780ffa68c9e41b8e4df3e1700fdae",
+                "url": "https://api.github.com/repos/xup6m6fu04/bitwin-sdk-php/zipball/e1862ffb78b337337ad803fb5e50197f8eb44cf4",
+                "reference": "e1862ffb78b337337ad803fb5e50197f8eb44cf4",
                 "shasum": ""
             },
             "require": {
@@ -5821,9 +5821,9 @@
             ],
             "support": {
                 "issues": "https://github.com/xup6m6fu04/bitwin-sdk-php/issues",
-                "source": "https://github.com/xup6m6fu04/bitwin-sdk-php/tree/v3.1.2"
+                "source": "https://github.com/xup6m6fu04/bitwin-sdk-php/tree/v3.2.0"
             },
-            "time": "2021-09-24T09:03:24+00:00"
+            "time": "2021-11-19T06:58:05+00:00"
         }
     ],
     "packages-dev": [
